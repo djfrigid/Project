@@ -246,29 +246,43 @@ def is_valid_exit(exits, chosen_exit):
     return chosen_exit in exits
 
 
-def execute_go(direction):
-    """This function, given the direction (e.g. "south") updates the current room
-    to reflect the movement of the player if the direction is a valid exit
-    (and prints the name of the room into which the player is
-    moving). Otherwise, it prints "You cannot go there."
-    """
-    
-    
-
 def execute_take(item_id):
     """This function takes an item_id as an argument and moves this item from the
     list of items in the current room to the player's inventory. However, if
     there is no such item in the room, this function prints
     "You cannot take that."
     """
-    pass
-    
+    if item_id in rooms[current_room]["items"]:
+        storage = item_id
+        del item_id
+        inventory.append(storage)
+    else:
+        print("You cannot take that")
 
 def execute_drop(item_id):
     """This function takes an item_id as an argument and moves this item from the
     player's inventory to list of items in the current room. However, if there is
     no such item in the inventory, this function prints "You cannot drop that."
     """
+    if item_id in inventory:
+        storage = item_id
+        del item_id  
+        rooms[current_room]["items"].append(storage)
+    else:
+        print("You cannot drop that")
+        
+        
+def execute_go(direction):
+    """This function, given the direction (e.g. "south") updates the current room
+    to reflect the movement of the player if the direction is a valid exit
+    (and prints the name of the room into which the player is
+    moving). Otherwise, it prints "You cannot go there."
+    """
+    if is_valid_exit(direction):
+        current_room = rooms[direction]
+        print_room()
+    else:
+        "you cannot go there"
     
     
 

@@ -126,7 +126,7 @@ def print_menu_line(direction, leads_to): #done
     print("Go "+ direction.upper() + " to " + leads_to +".")
 
 
-def print_menu(exits): #done
+def print_menu(exits):
     """This function displays the menu of available exits to the player. The
     argument exits is a dictionary of exits as exemplified in map.py. The
     menu should, for each exit, call the function print_menu_line() to print
@@ -144,6 +144,7 @@ def print_menu(exits): #done
     print("You can:")
     
     for key in exits:
+        value = exits[key]
         print_menu_line(key , value)
 
     print("Where do you want to go?")
@@ -165,12 +166,16 @@ def is_valid_exit(exits, user_input):
     >>> is_valid_exit(rooms["Parking"]["exits"], "east")
     True
     """
-    try:
-     if exits[user_input] is not None:
+    
+    if user_input[0] == "g" and user_input[1] == "o":
+        key = user_input[3:]
+    else:
+        key = user_input
+    
+    if key in exits:
         return True
-    except KeyError:
+    else:
         return False
-
     
 
 def menu(exits):
@@ -185,18 +190,19 @@ def menu(exits):
 
     # Repeat until the player enter a valid choice
     while True:
-        pass
         # COMPLETE THIS PART:
         
-        print_menu()
 
-        choice = input("Enter where you would like to go: ")
+        print_menu(exits)
 
-        choice = normalize_input(choice)
+        choice = input()
 
-        # Check if the input makes sense (is valid exit)
-            # If so, return the player's choice
-
+        choice = normalise_input(choice)
+            
+        if is_valid_exit(exits, choice):
+            return choice[3:]
+        else:
+            print("That isn't a valid way to go")
 
 
 
@@ -212,9 +218,8 @@ def move(exits, direction):
     >>> move(rooms["Reception"]["exits"], "west") == rooms["Office"]
     False
     """
-
-    key = exits[direction]
-    return rooms[key]
+    value = exits[direction]
+    return rooms[value]
     
     
     
@@ -236,6 +241,7 @@ def main():
 
         # Move the protagonist, i.e. update the current room
         current_room = move(exits, direction)
+        
 
 
 # Are we being run as a script? If so, run main().

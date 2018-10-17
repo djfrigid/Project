@@ -82,14 +82,11 @@ def normalise_input(user_input):
     no_punct = remove_punct(user_input).lower()
 
     iwords = [] 
-    while no_punct.find(" ") != -1:
-        rp = no_punct.find(" ")
-        word = no_punct[0:rp]
-        iwords.append(word)
-        print(no_punct)
 
+    iwords = re.sub(r"[^\w]", " ",  user_input).split()
+    
     iwords = filter_words(iwords, skip_words)
-
+    
     return iwords
 
     

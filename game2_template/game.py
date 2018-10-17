@@ -7,6 +7,7 @@ from gameparser import *
 
 
 
+
 def list_of_items(items):
     """This function takes a list of items (see items.py for the definition) and
     returns a comma-separated list of item names (as a string). For example:
@@ -25,19 +26,17 @@ def list_of_items(items):
 
     """
     out = ""
-    
-    
-    for i in range(0,len(items)-1,1):
-         out = out + items[i]["name"] +", "
-         
-    if len(items) > 1:
-        finalAdder = items[i+1]["name"]
-        out = out + finalAdder
-    elif len(items) ==1:
+
+    if len(items) == 1:
         out = out + items[0]["name"]
+    elif len(items) == 0:
+        out = ""
     else:
-        out = ""''""
-         
+        count = 0
+        while count < len(items) -1:
+            out = out + items[count]["name"] + ", "
+            count +=1
+        out = out + items[-1]["name"]
     return out
 
 
@@ -144,8 +143,7 @@ def print_room(room):
     if len(room["items"]) > 0:
         print("There is " + list_of_items(room["items"]) + " here.")
         print()
-    else:
-        pass
+    
 
 def exit_leads_to(exits, direction):
     """This function takes a dictionary of exits and a direction (a particular
@@ -252,11 +250,29 @@ def execute_take(item_id):
     there is no such item in the room, this function prints
     "You cannot take that."
     """
-    if item_id in rooms[current_room]["items"]:
-        storage = item_id
-        del item_id
-        inventory.append(storage)
-    else:
+    taken = False
+
+    for i in current_room["items"]:
+        
+        global maxWeight
+        global carryWeight
+        
+        prospectWeight = carryWeight + i["mass"]
+        
+        if prospectWeight > maxWeight:
+            canTake = False
+        else:
+            canTake = True
+        
+        if item_id == i["id"] and canTake == True :
+            store = i
+            current_room["items"].remove(i)
+            inventory.append(i)
+            taken = True
+            carryWeight = prospectWeight
+            
+    if taken == False:
+        print()
         print("You cannot take that")
 
 def execute_drop(item_id):
@@ -264,12 +280,25 @@ def execute_drop(item_id):
     player's inventory to list of items in the current room. However, if there is
     no such item in the inventory, this function prints "You cannot drop that."
     """
-    if item_id in inventory:
-        storage = item_id
-        del item_id  
-        rooms[current_room]["items"].append(storage)
-    else:
+    
+    global carryWeight
+    
+    
+    dropped = False
+    for i in inventory:
+        if item_id == i["id"]:
+            store = i
+            inventory.remove(i)
+            current_room["items"].append(i)
+            dropped = True
+            carryWeight -= i["mass"]
+            
+    
+    if dropped == False:
+        print()
         print("You cannot drop that")
+        
+        
         
         
 def execute_go(direction):
@@ -278,12 +307,12 @@ def execute_go(direction):
     (and prints the name of the room into which the player is
     moving). Otherwise, it prints "You cannot go there."
     """
-    if is_valid_exit(direction):
-        current_room = rooms[direction]
-        print_room()
-    else:
-        "you cannot go there"
+    global current_room
     
+    if is_valid_exit(current_room["exits"], direction):
+        current_room = rooms[current_room["exits"][direction]]
+    else:
+        print("No, You cannot go there")
     
 
 def execute_command(command):
@@ -293,7 +322,8 @@ def execute_command(command):
     execute_take, or execute_drop, supplying the second word as the argument.
 
     """
-
+    
+    
     if 0 == len(command):
         return
 
@@ -355,13 +385,14 @@ def move(exits, direction):
 
     # Next room to go to
     return rooms[exits[direction]]
-
+ 
 
 # This is the entry point of our program
 def main():
 
     # Main game loop
     while True:
+
         # Display game status (room description, inventory etc.)
         print_room(current_room)
         print_inventory_items(inventory)
@@ -371,8 +402,17 @@ def main():
 
         # Execute the player's command
         execute_command(command)
-
-
+        
+        win()
+        
+def win():
+    if len(rooms["Tutor"]["items"]) == 6:
+        print("-------------------------------------------------------")
+        print()
+        print("You have appeased your tutor's gluttonous desire for mostly useless items. You feel a measure of satisfaction ")
+        print()
+        print("-------------------------------------------------------")
+        exit()
 
 # Are we being run as a script? If so, run main().
 # '__main__' is the name of the scope in which top-level code executes.

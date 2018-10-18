@@ -62,11 +62,12 @@ def print_room_items(room):
     Note: <BLANKLINE> here means that doctest should expect a blank line.
 
     """
+    
     if len(room["items"]) > 0:
-        print("There is " + list_of_items(room["items"]) + " here.")
-        print()
-    else:
+        print("There is " + list_of_items(room["items"]) + " here." + "\n")
+    else: 
         pass
+    
 
 
 def print_inventory_items(items):
@@ -125,7 +126,7 @@ def print_room(room):
     <BLANKLINE>
     MJ AND SIMON'S ROOM
     <BLANKLINE>
-    You are leaning agains the door of the systems managers'
+    You are leaning against the door of the systems managers'
     room. Inside you notice Matt "MJ" John and Simon Jones. They
     ignore you. To the north is the reception.
     <BLANKLINE>
@@ -136,13 +137,12 @@ def print_room(room):
     print()
     print(room["name"].upper())
     print()
+    
     # Display room description
     print(room["description"])
     print()
 
-    if len(room["items"]) > 0:
-        print("There is " + list_of_items(room["items"]) + " here.")
-        print()
+    print_room_items(room)
     
 
 def exit_leads_to(exits, direction):
